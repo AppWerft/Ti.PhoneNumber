@@ -62,8 +62,8 @@ public class PhonenumberModule extends KrollModule implements
 	}
 
 	@Kroll.method
-	public KrollDict getSimNumber(@Kroll.argument(optional = true) Object callback) {
-		if (hasPermission("READ_PHONE_STATE")) {
+	public KrollDict getNumberBySIM(@Kroll.argument(optional = true) Object callback) {
+		if (callback == null && hasPermission("READ_PHONE_STATE")) {
 			return handlePhonestate();
 		} else if (callback != null && callback instanceof KrollFunction) {
 			requests.put(REQCODE_READ_PHONE_STATE, (KrollFunction) callback);
@@ -73,8 +73,8 @@ public class PhonenumberModule extends KrollModule implements
 	}
 
 	@Kroll.method
-	public KrollDict getWhatsappAccount(@Kroll.argument(optional = true) Object callback) {
-		if (hasPermission("GET_ACCOUNTS")) {
+	public KrollDict getNumberByWhatsappAccount(@Kroll.argument(optional = true) Object callback) {
+		if (callback == null && hasPermission("GET_ACCOUNTS")) {
 			return handleAccounts();
 		} else if (callback != null && callback instanceof KrollFunction) {
 			requests.put(REQCODE_GET_ACCOUNTS, (KrollFunction) callback);
@@ -84,9 +84,9 @@ public class PhonenumberModule extends KrollModule implements
 	}
 
 	@Kroll.method
-	public Object[] getContactlist(
+	public Object[] getNumberByContactlist(
 			@Kroll.argument(optional = true) Object callback) {
-		if (hasPermission("READ_CONTACTS")) {
+		if (callback == null && hasPermission("READ_CONTACTS")) {
 			return handleContacts();
 		} else if (callback != null && callback instanceof KrollFunction) {
 			requests.put(REQCODE_READ_CONTACTS, (KrollFunction) callback);

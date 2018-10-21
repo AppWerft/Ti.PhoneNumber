@@ -92,10 +92,10 @@ Local<FunctionTemplate> PhonenumberModule::getProxyTemplate(Isolate* isolate)
 		FunctionTemplate::New(isolate, titanium::Proxy::inherit<PhonenumberModule>));
 
 	// Method bindings --------------------------------------------------------
-	titanium::SetProtoMethod(isolate, t, "getSimNumber", PhonenumberModule::getSimNumber);
-	titanium::SetProtoMethod(isolate, t, "getContactlist", PhonenumberModule::getContactlist);
+	titanium::SetProtoMethod(isolate, t, "getNumberByWhatsappAccount", PhonenumberModule::getNumberByWhatsappAccount);
 	titanium::SetProtoMethod(isolate, t, "handleAccounts", PhonenumberModule::handleAccounts);
-	titanium::SetProtoMethod(isolate, t, "getWhatsapp", PhonenumberModule::getWhatsapp);
+	titanium::SetProtoMethod(isolate, t, "getNumberBySIM", PhonenumberModule::getNumberBySIM);
+	titanium::SetProtoMethod(isolate, t, "getNumberByContactlist", PhonenumberModule::getNumberByContactlist);
 	titanium::SetProtoMethod(isolate, t, "handleContacts", PhonenumberModule::handleContacts);
 
 	Local<ObjectTemplate> prototypeTemplate = t->PrototypeTemplate();
@@ -115,9 +115,9 @@ Local<FunctionTemplate> PhonenumberModule::getProxyTemplate(Isolate* isolate)
 }
 
 // Methods --------------------------------------------------------------------
-void PhonenumberModule::getSimNumber(const FunctionCallbackInfo<Value>& args)
+void PhonenumberModule::getNumberByWhatsappAccount(const FunctionCallbackInfo<Value>& args)
 {
-	LOGD(TAG, "getSimNumber()");
+	LOGD(TAG, "getNumberByWhatsappAccount()");
 	Isolate* isolate = args.GetIsolate();
 	HandleScope scope(isolate);
 
@@ -128,9 +128,9 @@ void PhonenumberModule::getSimNumber(const FunctionCallbackInfo<Value>& args)
 	}
 	static jmethodID methodID = NULL;
 	if (!methodID) {
-		methodID = env->GetMethodID(PhonenumberModule::javaClass, "getSimNumber", "(Ljava/lang/Object;)Lorg/appcelerator/kroll/KrollDict;");
+		methodID = env->GetMethodID(PhonenumberModule::javaClass, "getNumberByWhatsappAccount", "(Ljava/lang/Object;)Lorg/appcelerator/kroll/KrollDict;");
 		if (!methodID) {
-			const char *error = "Couldn't find proxy method 'getSimNumber' with signature '(Ljava/lang/Object;)Lorg/appcelerator/kroll/KrollDict;'";
+			const char *error = "Couldn't find proxy method 'getNumberByWhatsappAccount' with signature '(Ljava/lang/Object;)Lorg/appcelerator/kroll/KrollDict;'";
 			LOGE(TAG, error);
 				titanium::JSException::Error(isolate, error);
 				return;
@@ -198,96 +198,6 @@ void PhonenumberModule::getSimNumber(const FunctionCallbackInfo<Value>& args)
 	}
 
 	Local<Value> v8Result = titanium::TypeConverter::javaObjectToJsValue(isolate, env, jResult);
-
-	env->DeleteLocalRef(jResult);
-
-
-	args.GetReturnValue().Set(v8Result);
-
-}
-void PhonenumberModule::getContactlist(const FunctionCallbackInfo<Value>& args)
-{
-	LOGD(TAG, "getContactlist()");
-	Isolate* isolate = args.GetIsolate();
-	HandleScope scope(isolate);
-
-	JNIEnv *env = titanium::JNIScope::getEnv();
-	if (!env) {
-		titanium::JSException::GetJNIEnvironmentError(isolate);
-		return;
-	}
-	static jmethodID methodID = NULL;
-	if (!methodID) {
-		methodID = env->GetMethodID(PhonenumberModule::javaClass, "getContactlist", "(Ljava/lang/Object;)[Ljava/lang/Object;");
-		if (!methodID) {
-			const char *error = "Couldn't find proxy method 'getContactlist' with signature '(Ljava/lang/Object;)[Ljava/lang/Object;'";
-			LOGE(TAG, error);
-				titanium::JSException::Error(isolate, error);
-				return;
-		}
-	}
-
-	Local<Object> holder = args.Holder();
-	// If holder isn't the JavaObject wrapper we expect, look up the prototype chain
-	if (!JavaObject::isJavaObject(holder)) {
-		holder = holder->FindInstanceInPrototypeChain(getProxyTemplate(isolate));
-	}
-
-	titanium::Proxy* proxy = NativeObject::Unwrap<titanium::Proxy>(holder);
-
-
-	jvalue jArguments[1];
-
-
-
-
-	bool isNew_0;
-	if (args.Length() <= 0) {
-		jArguments[0].l = NULL;
-
-	} else {
-
-	if (!args[0]->IsNull()) {
-		Local<Value> arg_0 = args[0];
-		jArguments[0].l =
-			titanium::TypeConverter::jsValueToJavaObject(
-				isolate,
-				env, arg_0, &isNew_0);
-	} else {
-		jArguments[0].l = NULL;
-	}
-	}
-
-	jobject javaProxy = proxy->getJavaObject();
-	if (javaProxy == NULL) {
-		args.GetReturnValue().Set(v8::Undefined(isolate));
-		return;
-	}
-	jobjectArray jResult = (jobjectArray)env->CallObjectMethodA(javaProxy, methodID, jArguments);
-
-
-
-	proxy->unreferenceJavaObject(javaProxy);
-
-
-
-			if (isNew_0) {
-				env->DeleteLocalRef(jArguments[0].l);
-			}
-
-
-	if (env->ExceptionCheck()) {
-		Local<Value> jsException = titanium::JSException::fromJavaException(isolate);
-		env->ExceptionClear();
-		return;
-	}
-
-	if (jResult == NULL) {
-		args.GetReturnValue().Set(Null(isolate));
-		return;
-	}
-
-	Local<Array> v8Result = titanium::TypeConverter::javaArrayToJsArray(isolate, env, jResult);
 
 	env->DeleteLocalRef(jResult);
 
@@ -359,9 +269,9 @@ void PhonenumberModule::handleAccounts(const FunctionCallbackInfo<Value>& args)
 	args.GetReturnValue().Set(v8Result);
 
 }
-void PhonenumberModule::getWhatsapp(const FunctionCallbackInfo<Value>& args)
+void PhonenumberModule::getNumberBySIM(const FunctionCallbackInfo<Value>& args)
 {
-	LOGD(TAG, "getWhatsapp()");
+	LOGD(TAG, "getNumberBySIM()");
 	Isolate* isolate = args.GetIsolate();
 	HandleScope scope(isolate);
 
@@ -372,9 +282,9 @@ void PhonenumberModule::getWhatsapp(const FunctionCallbackInfo<Value>& args)
 	}
 	static jmethodID methodID = NULL;
 	if (!methodID) {
-		methodID = env->GetMethodID(PhonenumberModule::javaClass, "getWhatsapp", "(Ljava/lang/Object;)Lorg/appcelerator/kroll/KrollDict;");
+		methodID = env->GetMethodID(PhonenumberModule::javaClass, "getNumberBySIM", "(Ljava/lang/Object;)Lorg/appcelerator/kroll/KrollDict;");
 		if (!methodID) {
-			const char *error = "Couldn't find proxy method 'getWhatsapp' with signature '(Ljava/lang/Object;)Lorg/appcelerator/kroll/KrollDict;'";
+			const char *error = "Couldn't find proxy method 'getNumberBySIM' with signature '(Ljava/lang/Object;)Lorg/appcelerator/kroll/KrollDict;'";
 			LOGE(TAG, error);
 				titanium::JSException::Error(isolate, error);
 				return;
@@ -442,6 +352,96 @@ void PhonenumberModule::getWhatsapp(const FunctionCallbackInfo<Value>& args)
 	}
 
 	Local<Value> v8Result = titanium::TypeConverter::javaObjectToJsValue(isolate, env, jResult);
+
+	env->DeleteLocalRef(jResult);
+
+
+	args.GetReturnValue().Set(v8Result);
+
+}
+void PhonenumberModule::getNumberByContactlist(const FunctionCallbackInfo<Value>& args)
+{
+	LOGD(TAG, "getNumberByContactlist()");
+	Isolate* isolate = args.GetIsolate();
+	HandleScope scope(isolate);
+
+	JNIEnv *env = titanium::JNIScope::getEnv();
+	if (!env) {
+		titanium::JSException::GetJNIEnvironmentError(isolate);
+		return;
+	}
+	static jmethodID methodID = NULL;
+	if (!methodID) {
+		methodID = env->GetMethodID(PhonenumberModule::javaClass, "getNumberByContactlist", "(Ljava/lang/Object;)[Ljava/lang/Object;");
+		if (!methodID) {
+			const char *error = "Couldn't find proxy method 'getNumberByContactlist' with signature '(Ljava/lang/Object;)[Ljava/lang/Object;'";
+			LOGE(TAG, error);
+				titanium::JSException::Error(isolate, error);
+				return;
+		}
+	}
+
+	Local<Object> holder = args.Holder();
+	// If holder isn't the JavaObject wrapper we expect, look up the prototype chain
+	if (!JavaObject::isJavaObject(holder)) {
+		holder = holder->FindInstanceInPrototypeChain(getProxyTemplate(isolate));
+	}
+
+	titanium::Proxy* proxy = NativeObject::Unwrap<titanium::Proxy>(holder);
+
+
+	jvalue jArguments[1];
+
+
+
+
+	bool isNew_0;
+	if (args.Length() <= 0) {
+		jArguments[0].l = NULL;
+
+	} else {
+
+	if (!args[0]->IsNull()) {
+		Local<Value> arg_0 = args[0];
+		jArguments[0].l =
+			titanium::TypeConverter::jsValueToJavaObject(
+				isolate,
+				env, arg_0, &isNew_0);
+	} else {
+		jArguments[0].l = NULL;
+	}
+	}
+
+	jobject javaProxy = proxy->getJavaObject();
+	if (javaProxy == NULL) {
+		args.GetReturnValue().Set(v8::Undefined(isolate));
+		return;
+	}
+	jobjectArray jResult = (jobjectArray)env->CallObjectMethodA(javaProxy, methodID, jArguments);
+
+
+
+	proxy->unreferenceJavaObject(javaProxy);
+
+
+
+			if (isNew_0) {
+				env->DeleteLocalRef(jArguments[0].l);
+			}
+
+
+	if (env->ExceptionCheck()) {
+		Local<Value> jsException = titanium::JSException::fromJavaException(isolate);
+		env->ExceptionClear();
+		return;
+	}
+
+	if (jResult == NULL) {
+		args.GetReturnValue().Set(Null(isolate));
+		return;
+	}
+
+	Local<Array> v8Result = titanium::TypeConverter::javaArrayToJsArray(isolate, env, jResult);
 
 	env->DeleteLocalRef(jResult);
 

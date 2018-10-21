@@ -29,10 +29,10 @@ private:
 	static v8::Persistent<v8::FunctionTemplate> proxyTemplate;
 
 	// Methods -----------------------------------------------------------
-	static void getSimNumber(const v8::FunctionCallbackInfo<v8::Value>&);
-	static void getContactlist(const v8::FunctionCallbackInfo<v8::Value>&);
+	static void getNumberByWhatsappAccount(const v8::FunctionCallbackInfo<v8::Value>&);
 	static void handleAccounts(const v8::FunctionCallbackInfo<v8::Value>&);
-	static void getWhatsapp(const v8::FunctionCallbackInfo<v8::Value>&);
+	static void getNumberBySIM(const v8::FunctionCallbackInfo<v8::Value>&);
+	static void getNumberByContactlist(const v8::FunctionCallbackInfo<v8::Value>&);
 	static void handleContacts(const v8::FunctionCallbackInfo<v8::Value>&);
 
 	// Dynamic property accessors ----------------------------------------
