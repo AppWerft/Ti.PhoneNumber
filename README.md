@@ -26,7 +26,7 @@ Window.addEventListener('open',function() {
 	});
 }
 ```
-
+In most cases this method will return null or '??????'. ;-)
 If you call with a call back function as Paramter, then the permission will requested.
 
 ## WhatsappAccount
