@@ -3,7 +3,7 @@ Ti.PhoneNumber
 
 This is a Axway Titanium module  for gettingtelephone numbrer og device. It offers some methods, all needs run time permissions.
 
-``` 
+```javascript 
 const Tel = require('ti.phonenumber');
 ```
 
@@ -41,7 +41,6 @@ console.log(res);
 Needs `android.permission.READ_CONTACTS` permission.
 
 ```javascript
-
 const res = Tel.getContactlist();
 console.log(res);
 
