@@ -44,9 +44,13 @@ console.log(res);
 Needs `android.permission.READ_CONTACTS` permission.
 
 ```javascript
+// you can work without permissions, in this case you
+// will get the result directly.
 const res = Tel.getNumberByContactlist();
 console.log(res);
 
+// or yot start with callback. Tn this case a permission
+// requester will start:
 Window.addEventListener('open',function() {
 	Tel.getNumberByContactList(function(e){
 		console.log(e);
