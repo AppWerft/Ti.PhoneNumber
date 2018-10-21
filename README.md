@@ -1,5 +1,4 @@
-Ti.PhoneNumber
-===========================================
+# Ti.PhoneNumber
 
 This is a Axway Titanium module  for gettingtelephone numbrer og device. It offers some methods, all needs run time permissions.
 
