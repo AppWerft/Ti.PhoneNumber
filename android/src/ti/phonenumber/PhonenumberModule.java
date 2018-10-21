@@ -73,7 +73,7 @@ public class PhonenumberModule extends KrollModule implements
 	}
 
 	@Kroll.method
-	public KrollDict getWhatsapp(@Kroll.argument(optional = true) Object callback) {
+	public KrollDict getWhatsappAccount(@Kroll.argument(optional = true) Object callback) {
 		if (hasPermission("GET_ACCOUNTS")) {
 			return handleAccounts();
 		} else if (callback != null && callback instanceof KrollFunction) {

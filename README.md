@@ -7,7 +7,7 @@ This is a Axway Titanium module  for gettingtelephone numbrer og device. It offe
 const Tel = require('ti.phonenumber');
 ```
 
-## SimNumber
+## SIM
 
 Needs  `android.permission.READ_PHONE_STATE`
 in manifest. 
@@ -15,10 +15,10 @@ in manifest.
 If you start without granted permissions the methode will return null;
 
 ```javascript
-const res = Tel.getSimNumber();
+const res = Tel.getNumberBySIM();
 console.log(res);
 
-Tel.getSimNumber(function(e){
+Tel.getNumberBySIM(function(e){
 	console.log(e);
 });
 
@@ -26,12 +26,12 @@ Tel.getSimNumber(function(e){
 
 If you call with a call back function as Paramter, then the permission will requested.
 
-## Whatsapp
+## WhatsappAccount
 
 Needs `android.permission.GET_ACCOUNTS` permission. Same pattern as above: With callback the permission request will forced.
 
 ```javascript
-const res = Tel.getWhatsapp();
+const res = Tel.getNumberByWhatsappAccount();
 console.log(res);
 
 ```
@@ -41,10 +41,10 @@ console.log(res);
 Needs `android.permission.READ_CONTACTS` permission.
 
 ```javascript
-const res = Tel.getContactlist();
+const res = Tel.getNumberByContactlist();
 console.log(res);
 
-Tel.getContactList(function(e){
+Tel.getNumberByContactList(function(e){
 	console.log(e);
 });
 
