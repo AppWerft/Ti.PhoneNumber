@@ -3,22 +3,22 @@ Ti.PhoneNumber
 
 This is a Axway Titanium module  for gettingtelephone numbrer og device. It offers some methods, all needs run time permissions.
 
-```javascript 
+```javascript
 const Tel = require('ti.phonenumber');
 ```
 
 ## SIM
 
 Needs  `android.permission.READ_PHONE_STATE`
-in manifest. 
+in manifest.
 
 If you start without granted permissions the methode will return null;
 
 ```javascript
-const res = Tel.getNumberBySIM();
+const res = Tel.getSimNumber();
 console.log(res);
 
-Tel.getNumberBySIM(function(e){
+Tel.getSimNumber(function(e){
 	console.log(e);
 });
 

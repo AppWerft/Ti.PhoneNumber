@@ -1,1 +1,7 @@
-android/build/
+java-sources.txt
+.DS_Store
+metadata.json
+*.xcworkspace/
+*.xcuserstate
+xcuserdata/
+build/
