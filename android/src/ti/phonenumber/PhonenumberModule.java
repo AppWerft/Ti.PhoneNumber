@@ -62,8 +62,8 @@ public class PhonenumberModule extends KrollModule implements
 	}
 
 	@Kroll.method
-	public KrollDict getSimNumber(@Kroll.argument(optional = true) Object callback) {
-		if (hasPermission("READ_PHONE_STATE")) {
+	public KrollDict getNumberBySIM(@Kroll.argument(optional = true) Object callback) {
+		if (callback == null && hasPermission("READ_PHONE_STATE")) {
 			return handlePhonestate();
 		} else if (callback != null && callback instanceof KrollFunction) {
 			requests.put(REQCODE_READ_PHONE_STATE, (KrollFunction) callback);
@@ -73,8 +73,8 @@ public class PhonenumberModule extends KrollModule implements
 	}
 
 	@Kroll.method
-	public KrollDict getWhatsappAccount(@Kroll.argument(optional = true) Object callback) {
-		if (hasPermission("GET_ACCOUNTS")) {
+	public KrollDict getNumberByWhatsappAccount(@Kroll.argument(optional = true) Object callback) {
+		if (callback == null && hasPermission("GET_ACCOUNTS")) {
 			return handleAccounts();
 		} else if (callback != null && callback instanceof KrollFunction) {
 			requests.put(REQCODE_GET_ACCOUNTS, (KrollFunction) callback);
@@ -84,9 +84,9 @@ public class PhonenumberModule extends KrollModule implements
 	}
 
 	@Kroll.method
-	public Object[] getContactlist(
+	public Object[] getNumberByContactlist(
 			@Kroll.argument(optional = true) Object callback) {
-		if (hasPermission("READ_CONTACTS")) {
+		if (callback == null && hasPermission("READ_CONTACTS")) {
 			return handleContacts();
 		} else if (callback != null && callback instanceof KrollFunction) {
 			requests.put(REQCODE_READ_CONTACTS, (KrollFunction) callback);
@@ -133,14 +133,16 @@ public class PhonenumberModule extends KrollModule implements
 			String acname = ac.name;
 			String actype = ac.type;
 			if (actype.equals("com.whatsapp")) {
-				String phoneNumber = ac.name;
 				res.put("com.whatsapp", ac.name);
-				return res;
+			}
+			if (actype.equals("com.google")) {
+				String phoneNumber = ac.name;
+				res.put("com.googlr", ac.name);
 			}
 			// Take your time to look at all available accounts
 			System.out.println("Accounts : " + acname + ", " + actype);
 		}
-		return null;
+		return res;
 	}
 
 	@Kroll.method
@@ -214,16 +216,24 @@ public class PhonenumberModule extends KrollModule implements
 	}
 
 	@Override
-	public void onError(Activity arg0, int arg1, Exception arg2) {
-		// TODO Auto-generated method stub
-
+	public void onError(Activity activity, int requestCode, Exception ex) {
+		if (requests.containsKey(requestCode)) {
+			KrollDict res = new KrollDict();
+			res.put("error", true);
+			res.put("message", ex.getMessage());
+			requests.get(requestCode).call(getKrollObject(),res);
+		}
 	}
 
 	@Override
 	public void onResult(Activity activity, int requestCode, int resultCode,
 			Intent data) {
 		if (resultCode == Activity.RESULT_CANCELED) {
-
+			KrollDict res = new KrollDict();
+			res.put("error", true);
+			res.put("message", "canceled");
+			requests.get(requestCode).call(getKrollObject(),res);
+					
 		}
 		if (resultCode == Activity.RESULT_OK
 				&& requests.containsKey(requestCode)) {
@@ -242,6 +252,6 @@ public class PhonenumberModule extends KrollModule implements
 				break;
 			}
 		}
-
 	}
+	
 }
