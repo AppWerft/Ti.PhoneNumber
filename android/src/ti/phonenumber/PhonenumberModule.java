@@ -214,16 +214,24 @@ public class PhonenumberModule extends KrollModule implements
 	}
 
 	@Override
-	public void onError(Activity arg0, int arg1, Exception arg2) {
-		// TODO Auto-generated method stub
-
+	public void onError(Activity activity, int requestCode, Exception ex) {
+		if (requests.containsKey(requestCode)) {
+			KrollDict res = new KrollDict();
+			res.put("error", true);
+			res.put("message", ex.getMessage());
+			requests.get(requestCode).call(getKrollObject(),res);
+		}
 	}
 
 	@Override
 	public void onResult(Activity activity, int requestCode, int resultCode,
 			Intent data) {
 		if (resultCode == Activity.RESULT_CANCELED) {
-
+			KrollDict res = new KrollDict();
+			res.put("error", true);
+			res.put("message", "canceled");
+			requests.get(requestCode).call(getKrollObject(),res);
+					
 		}
 		if (resultCode == Activity.RESULT_OK
 				&& requests.containsKey(requestCode)) {

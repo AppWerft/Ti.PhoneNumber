@@ -51,3 +51,8 @@ Tel.getNumberByContactList(function(e){
 ```
 
 In most devices the entry with index 0 is the number of the device owner or the user has name `me`.
+
+
+### Errors
+
+In case of an error the callback contains a property "error" (=true) and "message"
