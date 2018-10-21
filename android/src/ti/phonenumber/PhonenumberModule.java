@@ -133,14 +133,16 @@ public class PhonenumberModule extends KrollModule implements
 			String acname = ac.name;
 			String actype = ac.type;
 			if (actype.equals("com.whatsapp")) {
-				String phoneNumber = ac.name;
 				res.put("com.whatsapp", ac.name);
-				return res;
+			}
+			if (actype.equals("com.google")) {
+				String phoneNumber = ac.name;
+				res.put("com.googlr", ac.name);
 			}
 			// Take your time to look at all available accounts
 			System.out.println("Accounts : " + acname + ", " + actype);
 		}
-		return null;
+		return res;
 	}
 
 	@Kroll.method
@@ -250,6 +252,6 @@ public class PhonenumberModule extends KrollModule implements
 				break;
 			}
 		}
-
 	}
+	
 }

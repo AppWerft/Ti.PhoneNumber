@@ -12,7 +12,7 @@ copyright: Copyright (c) 2018 by Your Company
 
 # these should not be edited
 name: phonenumber
-moduleid: ti.phoneneumber
+moduleid: ti.phonenumber
 guid: cd38de87-77ce-45eb-9d5a-506ab6cd3806
 platform: android
 minsdk: 7.1.0.GA
