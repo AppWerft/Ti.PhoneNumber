@@ -4,7 +4,9 @@ This is a Axway Titanium module  for gettingtelephone numbrer og device. It offe
 
 ```javascript 
 const Tel = require('ti.phonenumber');
-const Win = Ti.UI.createWindow();
+
+const Window = Ti.UI.createWindow();
+
 ```
 
 ## SIM
@@ -50,6 +52,7 @@ Window.addEventListener('open',function() {
 		console.log(e);
 	});
 });
+Window.open();
 ```
 
 In most devices the entry with index 0 is the number of the device owner or the user has name `me`.
