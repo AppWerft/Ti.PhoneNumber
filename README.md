@@ -14,8 +14,14 @@ in manifest.
 
 If you start without granted permissions the methode will return null;
 
-```
-console.log(Tel.getSimNumber());
+```javascript
+const res = Tel.getSimNumber();
+console.log(res);
+
+Tel.getSimNumber(function(e){
+	console.log(e);
+});
+
 ```
 
 If you call with a call back function as Paramter, then the permission will requested.
@@ -24,8 +30,10 @@ If you call with a call back function as Paramter, then the permission will requ
 
 Needs `android.permission.GET_ACCOUNTS` permission. Same pattern as above: With callback the permission request will forced.
 
-```
-console.log(Tel.getWhatsapp());
+```javascript
+const res = Tel.getWhatsapp();
+console.log(res);
+
 ```
 
 ## Contact
@@ -33,7 +41,13 @@ console.log(Tel.getWhatsapp());
 Needs `android.permission.READ_CONTACTS` permission.
 
 ```javascript
-console.log(Tel.getContactlist());
+
+const res = Tel.getContactlist();
+console.log(res);
+
+Tel.getContactList(function(e){
+	console.log(e);
+});
 
 ```
 
