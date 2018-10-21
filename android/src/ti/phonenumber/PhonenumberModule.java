@@ -54,13 +54,6 @@ public class PhonenumberModule extends KrollModule implements
 		}
 	}
 
-	@Kroll.onAppCreate
-	public static void onAppCreate(TiApplication app) {
-		Log.d(LCAT, "inside onAppCreate");
-		// put module init code that needs to run when the application is
-		// created
-	}
-
 	@Kroll.method
 	public KrollDict getNumberBySIM(@Kroll.argument(optional = true) Object callback) {
 		if (callback == null && hasPermission("READ_PHONE_STATE")) {
