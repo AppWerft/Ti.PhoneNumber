@@ -8,7 +8,7 @@ TODO: Enter your module description here
 
 To access this module from JavaScript, you would do the following:
 
-    var phonenumber = require("ti.phoneneumber");
+    var phonenumber = require("ti.phonenumber");
 
 The phonenumber variable is a reference to the Module object.
 

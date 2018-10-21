@@ -13,7 +13,7 @@ win.add(label);
 win.open();
 
 // TODO: write your module tests here
-var phonenumber = require('ti.phoneneumber');
+var phonenumber = require('ti.phonenumber');
 Ti.API.info("module is => " + phonenumber);
 
 label.text = phonenumber.example();
@@ -36,4 +36,3 @@ if (Ti.Platform.name == "android") {
 	proxy.printMessage("Hello world!");
 	win.add(proxy);
 }
-
