@@ -62,7 +62,7 @@ public class PhonenumberModule extends KrollModule implements
 	}
 
 	@Kroll.method
-	public String getSimNumbers(@Kroll.argument(optional = true) Object callback) {
+	public KrollDict getSimNumber(@Kroll.argument(optional = true) Object callback) {
 		if (hasPermission("READ_PHONE_STATE")) {
 			return handlePhonestate();
 		} else if (callback != null && callback instanceof KrollFunction) {
