@@ -190,6 +190,7 @@ public class PhonenumberModule extends KrollModule implements
 
 	@Override
 	public void onError(Activity activity, int requestCode, Exception ex) {
+		Log.d(LCAT,"onError " + requestCode + "  " + ex.getMessage());
 		if (requests.containsKey(requestCode)) {
 			KrollDict res = new KrollDict();
 			res.put("error", true);
