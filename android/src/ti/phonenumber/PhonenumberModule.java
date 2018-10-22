@@ -19,6 +19,7 @@ import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.util.TiActivityResultHandler;
+import org.json.JSONArray;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -38,9 +39,8 @@ import android.telephony.TelephonyManager;
 @Kroll.module(name = "Phonenumber", id = "ti.phonenumber")
 public class PhonenumberModule extends KrollModule implements
 		TiActivityResultHandler {
-	// android.permission.READ_PHONE_STATE
-	// Standard Debugging variables
-	private static final String LCAT = "PhonenumberModule";
+
+	private static final String LCAT = "☎️ TiPhoneNumber";
 	private static final int REQCODE_READ_PHONE_STATE = 1;
 	private static final int REQCODE_READ_CONTACTS = 2;
 	private static final int REQCODE_GET_ACCOUNTS = 3;
@@ -53,31 +53,28 @@ public class PhonenumberModule extends KrollModule implements
 			requests = new HashMap<Integer, KrollFunction>();
 		}
 	}
+	@Kroll.method
+	public KrollDict getNumberByAccount(){
+		return handleAccounts();
+	}
 
 	@Kroll.method
-	public KrollDict getNumberBySIM(@Kroll.argument(optional = true) Object callback) {
+	public KrollDict getNumberBySIM(
+			@Kroll.argument(optional = true) Object callback) {
 		if (callback == null && hasPermission("READ_PHONE_STATE")) {
 			return handlePhonestate();
 		} else if (callback != null && callback instanceof KrollFunction) {
+			Log.d(LCAT, "getNumberBySIM with callback");
 			requests.put(REQCODE_READ_PHONE_STATE, (KrollFunction) callback);
 			requestPermission("READ_PHONE_STATE", REQCODE_READ_PHONE_STATE);
 		}
 		return null;
 	}
+	
+	
 
 	@Kroll.method
-	public KrollDict getNumberByWhatsappAccount(@Kroll.argument(optional = true) Object callback) {
-		if (callback == null && hasPermission("GET_ACCOUNTS")) {
-			return handleAccounts();
-		} else if (callback != null && callback instanceof KrollFunction) {
-			requests.put(REQCODE_GET_ACCOUNTS, (KrollFunction) callback);
-			requestPermission("GET_ACCOUNTS", REQCODE_GET_ACCOUNTS);
-		}
-		return null;
-	}
-
-	@Kroll.method
-	public Object[] getNumberByContactlist(
+	public KrollDict getNumberByContactlist(
 			@Kroll.argument(optional = true) Object callback) {
 		if (callback == null && hasPermission("READ_CONTACTS")) {
 			return handleContacts();
@@ -94,99 +91,78 @@ public class PhonenumberModule extends KrollModule implements
 		Context ctx = TiApplication.getInstance().getApplicationContext();
 		TelephonyManager telephonyManager = (TelephonyManager) ctx
 				.getSystemService(Context.TELEPHONY_SERVICE);
-		TelephonyInfo telephonyInfo = TelephonyInfo.getInstance(ctx);
-		String imeiSIM1 = telephonyInfo.getImsiSIM1();
-        String imeiSIM2 = telephonyInfo.getImsiSIM2();
 
-        boolean isSIM1Ready = telephonyInfo.isSIM1Ready();
-        boolean isSIM2Ready = telephonyInfo.isSIM2Ready();
-
-        boolean isDualSIM = telephonyInfo.isDualSIM();
-        
 		if (Build.VERSION.SDK_INT >= 23) {
-			res.put("phoneCount",telephonyManager.getPhoneCount());
+			res.put("phoneCount", telephonyManager.getPhoneCount());
 		}
-		
 		String sim1 = telephonyManager.getLine1Number();
-		res.put("isDualSIM", isDualSIM);
 		res.put("sim1", sim1);
-		res.put("isSmsCapable", 	telephonyManager.	isSmsCapable()); 
-		res.put("isVoiceCapable", 	telephonyManager.	isVoiceCapable()); 
+		res.put("isSmsCapable", telephonyManager.isSmsCapable());
+		res.put("isVoiceCapable", telephonyManager.isVoiceCapable());
 		return res;
 	}
 
 	@Kroll.method
 	public KrollDict handleAccounts() {
-		KrollDict res = new KrollDict();
+		ArrayList<KrollDict> accountlist = new ArrayList<KrollDict>();
+		
 		Context ctx = TiApplication.getInstance().getApplicationContext();
 		AccountManager am = AccountManager.get(ctx);
 		Account[] accounts = am.getAccounts();
-		ArrayList<String> googleAccounts = new ArrayList<String>();
 		for (Account ac : accounts) {
-			String acname = ac.name;
-			String actype = ac.type;
-			if (actype.equals("com.whatsapp")) {
-				res.put("com.whatsapp", ac.name);
-			}
-			if (actype.equals("com.google")) {
-				String phoneNumber = ac.name;
-				res.put("com.googlr", ac.name);
-			}
-			// Take your time to look at all available accounts
-			System.out.println("Accounts : " + acname + ", " + actype);
+			KrollDict a = new KrollDict();
+			a.put("type", ac.type);
+			a.put("name", ac.name);
+			accountlist.add(a);
 		}
-		return res;
+		KrollDict result = new KrollDict();
+		result.put("accounts", accountlist.toArray(new KrollDict[accountlist.size()]));
+		return result;
 	}
 
 	@Kroll.method
-	public Object[] handleContacts() {
-		KrollDict res = new KrollDict();
+	public KrollDict handleContacts() {
+		KrollDict result = new KrollDict();
 		final Context ctx = TiApplication.getInstance().getApplicationContext();
 		ArrayList<KrollDict> phoneNumbers = new ArrayList<KrollDict>();
-		final ContentResolver cr = ctx.getContentResolver();
-		String[] projection = new String[] { Contacts.AUTHORITY, Phone.NUMBER };
-		final Cursor cur = cr.query(Data.CONTENT_URI, projection, null, null,
-				null);
-		if (cur.getCount() > 0) {// thats mean some resutl has been found
-			if (cur.moveToNext()) {
-
-				KrollDict Name = new KrollDict();
-				phoneNumbers.add(Name);
-				String id = cur.getString(cur
-						.getColumnIndex(ContactsContract.Contacts._ID));
-				String name = cur
-						.getString(cur
-								.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-				Log.e("Names", name);
-				Name.put("name", name);
-				ArrayList<String> numberList = new ArrayList<String>();
-				Name.put("phones", numberList);
-				if (Integer
-						.parseInt(cur.getString(cur
-								.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
-					Cursor phones = ctx.getContentResolver().query(
-							ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-							null,
-							ContactsContract.CommonDataKinds.Phone.CONTACT_ID
-									+ " = " + id, null, null);
-					while (phones.moveToNext()) {
-						String phoneNumber = phones
-								.getString(phones
-										.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-						Log.e("Number", phoneNumber);
-						numberList.add(phoneNumber);
-					}
-					phones.close();
-				}
-			}
+		Cursor phones = ctx.getContentResolver().query(
+				ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null,
+				null, null);
+		while (phones.moveToNext()) {
+			KrollDict phone = new KrollDict();
+			phone.put(
+					"displayName",
+					phones.getString(phones
+							.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)));
+			phone.put(
+					"number",
+					phones.getString(phones
+							.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
+			/*phone.put(
+					"contentType",
+					phones.getString(phones
+							.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE)));
+			*/
+			phone.put(
+					"isSuperPrimary",
+					phones.getString(phones
+							.getColumnIndex(ContactsContract.CommonDataKinds.Phone.IS_SUPER_PRIMARY)));
+			phone.put(
+					"isPrimary",
+					phones.getString(phones
+							.getColumnIndex(ContactsContract.CommonDataKinds.Phone.IS_PRIMARY)));
+			phoneNumbers.add(phone);
 		}
-		cur.close();
-		return phoneNumbers.toArray();
+		// https://stackoverflow.com/questions/10755994/how-to-get-all-contacts-and-all-of-their-attributes
+		phones.close();
+		Log.d(LCAT,"numbers found: " + phoneNumbers.size());
+		result.put("contacts", phoneNumbers.toArray(new KrollDict[phoneNumbers.size()]));
+		
+		return result;
 	}
 
 	private boolean hasPermission(String permission) {
 		if (Build.VERSION.SDK_INT >= 23) {
-			ArrayList<String> permissions = new ArrayList<String>();
 			Activity currentActivity = TiApplication.getInstance()
 					.getCurrentActivity();
 			if (currentActivity.checkSelfPermission("android.permission."
@@ -197,13 +173,17 @@ public class PhonenumberModule extends KrollModule implements
 		return true;
 	}
 
-	private void requestPermission(String permission, int REQUEST_CODE) {
-		if (Build.VERSION.SDK_INT >= 23) {
+	private void requestPermission(String permission, int requestCode) {
+		if (Build.VERSION.SDK_INT < 23 || hasPermission(permission)) {
+			Log.d(LCAT, "always granted: " + permission);
+			dispatchTaskAndCallback(requestCode);
+		} else {
+			Log.d(LCAT, "requestPermission " + permission);
 			String permissions[] = new String[] { "android.permission."
 					+ permission };
 			Activity currentActivity = TiApplication.getInstance()
 					.getCurrentActivity();
-			currentActivity.requestPermissions(permissions, REQUEST_CODE);
+			currentActivity.requestPermissions(permissions, requestCode);
 			return;
 		}
 	}
@@ -214,37 +194,39 @@ public class PhonenumberModule extends KrollModule implements
 			KrollDict res = new KrollDict();
 			res.put("error", true);
 			res.put("message", ex.getMessage());
-			requests.get(requestCode).call(getKrollObject(),res);
+			requests.get(requestCode).call(getKrollObject(), res);
 		}
 	}
 
 	@Override
 	public void onResult(Activity activity, int requestCode, int resultCode,
 			Intent data) {
+		Log.d(LCAT,"onResult " + requestCode + "  " + resultCode);
 		if (resultCode == Activity.RESULT_CANCELED) {
 			KrollDict res = new KrollDict();
 			res.put("error", true);
 			res.put("message", "canceled");
-			requests.get(requestCode).call(getKrollObject(),res);
-					
+			requests.get(requestCode).call(getKrollObject(), res);
+
 		}
 		if (resultCode == Activity.RESULT_OK
 				&& requests.containsKey(requestCode)) {
-			switch (requestCode) {
-			case REQCODE_READ_PHONE_STATE:
-				requests.get(requestCode).call(getKrollObject(),
-						handlePhonestate());
-				break;
-			case REQCODE_READ_CONTACTS:
-				requests.get(requestCode).call(getKrollObject(),
-						handleContacts());
-				break;
-			case REQCODE_GET_ACCOUNTS:
-				requests.get(requestCode).call(getKrollObject(),
-						handleAccounts());
-				break;
-			}
+			dispatchTaskAndCallback(requestCode);
 		}
 	}
-	
+
+	private void dispatchTaskAndCallback(int requestCode) {
+		switch (requestCode) {
+		case REQCODE_READ_PHONE_STATE:
+			requests.get(requestCode)
+					.call(getKrollObject(), handlePhonestate());
+			break;
+		case REQCODE_READ_CONTACTS:
+			requests.get(requestCode).call(getKrollObject(), handleContacts());
+			break;
+		case REQCODE_GET_ACCOUNTS:
+			requests.get(requestCode).call(getKrollObject(), handleAccounts());
+			break;
+		}
+	}
 }

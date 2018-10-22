@@ -9,7 +9,17 @@ const Window = Ti.UI.createWindow();
 
 ```
 
-## SIM
+## By account
+
+
+```javascript
+const res = Tel.getNumberByAccount();
+console.log(res);
+
+```
+
+
+## By SIM
 
 Needs  `android.permission.READ_PHONE_STATE`
 in manifest. 
@@ -29,17 +39,8 @@ Window.addEventListener('open',function() {
 In most cases this method will return null or '??????'. ;-)
 If you call with a call back function as Paramter, then the permission will requested.
 
-## WhatsappAccount
 
-Needs `android.permission.GET_ACCOUNTS` permission. Same pattern as above: With callback the permission request will forced.
-
-```javascript
-const res = Tel.getNumberByWhatsappAccount();
-console.log(res);
-
-```
-
-## Contact
+## By Contact
 
 Needs `android.permission.READ_CONTACTS` permission.
 
