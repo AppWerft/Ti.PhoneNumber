@@ -53,8 +53,9 @@ public class PhonenumberModule extends KrollModule implements
 			requests = new HashMap<Integer, KrollFunction>();
 		}
 	}
+
 	@Kroll.method
-	public KrollDict getNumberByAccount(){
+	public KrollDict getNumberByAccount() {
 		return handleAccounts();
 	}
 
@@ -70,8 +71,6 @@ public class PhonenumberModule extends KrollModule implements
 		}
 		return null;
 	}
-	
-	
 
 	@Kroll.method
 	public KrollDict getNumberByContactlist(
@@ -105,18 +104,29 @@ public class PhonenumberModule extends KrollModule implements
 	@Kroll.method
 	public KrollDict handleAccounts() {
 		ArrayList<KrollDict> accountlist = new ArrayList<KrollDict>();
-		
-		Context ctx = TiApplication.getInstance().getApplicationContext();
-		AccountManager am = AccountManager.get(ctx);
-		Account[] accounts = am.getAccounts();
-		for (Account ac : accounts) {
-			KrollDict a = new KrollDict();
-			a.put("type", ac.type);
-			a.put("name", ac.name);
-			accountlist.add(a);
-		}
 		KrollDict result = new KrollDict();
-		result.put("accounts", accountlist.toArray(new KrollDict[accountlist.size()]));
+		if (hasPermission("GET_ACCOUNTS")) {
+			Log.d(LCAT,"GET_ACCOUNTS granted");
+			Context ctx = TiApplication.getInstance().getApplicationContext();
+			AccountManager am = AccountManager.get(ctx);
+			Account[] accounts = am.getAccounts();
+			for (Account ac : accounts) {
+				KrollDict a = new KrollDict();
+				a.put("type", ac.type);
+				a.put("name", ac.name);
+				accountlist.add(a);
+			}
+			result.put("success", true);
+			result.put("error", false);
+			result.put("accounts",
+					accountlist.toArray(new KrollDict[accountlist.size()]));
+		} else {
+			Log.d(LCAT,"no GET_ACCOUNTS permission");
+			result.put("success", false);
+			result.put("error", true);
+			result.put("message", "Missing GET_ACCOUNTS permission");
+		}
+		Log.d(LCAT, result.toString());
 		return result;
 	}
 
@@ -138,11 +148,11 @@ public class PhonenumberModule extends KrollModule implements
 					"number",
 					phones.getString(phones
 							.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
-			/*phone.put(
-					"contentType",
-					phones.getString(phones
-							.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE)));
-			*/
+			/*
+			 * phone.put( "contentType", phones.getString(phones
+			 * .getColumnIndex(
+			 * ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE)));
+			 */
 			phone.put(
 					"isSuperPrimary",
 					phones.getString(phones
@@ -155,9 +165,10 @@ public class PhonenumberModule extends KrollModule implements
 		}
 		// https://stackoverflow.com/questions/10755994/how-to-get-all-contacts-and-all-of-their-attributes
 		phones.close();
-		Log.d(LCAT,"numbers found: " + phoneNumbers.size());
-		result.put("contacts", phoneNumbers.toArray(new KrollDict[phoneNumbers.size()]));
-		
+		Log.d(LCAT, "numbers found: " + phoneNumbers.size());
+		result.put("contacts",
+				phoneNumbers.toArray(new KrollDict[phoneNumbers.size()]));
+
 		return result;
 	}
 
@@ -190,7 +201,7 @@ public class PhonenumberModule extends KrollModule implements
 
 	@Override
 	public void onError(Activity activity, int requestCode, Exception ex) {
-		Log.d(LCAT,"onError " + requestCode + "  " + ex.getMessage());
+		Log.d(LCAT, "onError " + requestCode + "  " + ex.getMessage());
 		if (requests.containsKey(requestCode)) {
 			KrollDict res = new KrollDict();
 			res.put("error", true);
@@ -202,7 +213,7 @@ public class PhonenumberModule extends KrollModule implements
 	@Override
 	public void onResult(Activity activity, int requestCode, int resultCode,
 			Intent data) {
-		Log.d(LCAT,"onResult " + requestCode + "  " + resultCode);
+		Log.d(LCAT, "onResult " + requestCode + "  " + resultCode);
 		if (resultCode == Activity.RESULT_CANCELED) {
 			KrollDict res = new KrollDict();
 			res.put("error", true);
