@@ -48,9 +48,9 @@ Needs `android.permission.READ_CONTACTS` permission.
 
 ```javascript
 if (Ti.Android.hasPermission('android.permission.READ_CONTACTS')) {
-	console.log(Tel.getByContacts());
+	console.log(Tel.getByContactlist());
 } else Ti.Android.requestPermissions(['android.permission.READ_CONTACTS'],function(e)) {
-if (e.success) console.log(Tel.getByContacts());
+if (e.success) console.log(Tel.getByContactlist());
 
 
 Window.open();

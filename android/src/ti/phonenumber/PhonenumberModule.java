@@ -18,10 +18,10 @@ import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.TiApplication;
+import org.appcelerator.titanium.TiBaseActivity;
 import org.appcelerator.titanium.util.TiActivityResultHandler;
 import org.json.JSONArray;
-
-import android.accounts.Account;
+	import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -35,6 +35,9 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Data;
 import android.telephony.TelephonyManager;
+	
+import org.appcelerator.titanium.util.TiActivityResultHandler;
+import org.appcelerator.titanium.util.TiActivitySupport;
 
 @Kroll.module(name = "Phonenumber", id = "ti.phonenumber")
 public class PhonenumberModule extends KrollModule implements
@@ -56,31 +59,25 @@ public class PhonenumberModule extends KrollModule implements
 
 	@Kroll.method
 	public KrollDict getNumberByAccount() {
-		return handleAccounts();
-	}
-
-	@Kroll.method
-	public KrollDict getNumberBySIM(
-			@Kroll.argument(optional = true) Object callback) {
-		if (callback == null && hasPermission("READ_PHONE_STATE")) {
-			return handlePhonestate();
-		} else if (callback != null && callback instanceof KrollFunction) {
-			Log.d(LCAT, "getNumberBySIM with callback");
-			requests.put(REQCODE_READ_PHONE_STATE, (KrollFunction) callback);
-			requestPermission("READ_PHONE_STATE", REQCODE_READ_PHONE_STATE);
-		}
+		if (hasPermission("READ_CONTACTS")) {
+			return handleContacts();
+		} 
 		return null;
 	}
 
 	@Kroll.method
-	public KrollDict getNumberByContactlist(
-			@Kroll.argument(optional = true) Object callback) {
-		if (callback == null && hasPermission("READ_CONTACTS")) {
+	public KrollDict getNumberBySIM() {
+		if (hasPermission("READ_PHONE_STATE")) {
+			return handlePhonestate();
+		} 
+		return null;
+	}
+
+	@Kroll.method
+	public KrollDict getNumberByContactlist() {
+		if (hasPermission("READ_CONTACTS")) {
 			return handleContacts();
-		} else if (callback != null && callback instanceof KrollFunction) {
-			requests.put(REQCODE_READ_CONTACTS, (KrollFunction) callback);
-			requestPermission("READ_CONTACTS", REQCODE_READ_CONTACTS);
-		}
+		} 
 		return null;
 	}
 
@@ -106,7 +103,7 @@ public class PhonenumberModule extends KrollModule implements
 		ArrayList<KrollDict> accountlist = new ArrayList<KrollDict>();
 		KrollDict result = new KrollDict();
 		if (hasPermission("GET_ACCOUNTS")) {
-			Log.d(LCAT,"GET_ACCOUNTS granted");
+			Log.d(LCAT, "GET_ACCOUNTS granted");
 			Context ctx = TiApplication.getInstance().getApplicationContext();
 			AccountManager am = AccountManager.get(ctx);
 			Account[] accounts = am.getAccounts();
@@ -121,7 +118,7 @@ public class PhonenumberModule extends KrollModule implements
 			result.put("accounts",
 					accountlist.toArray(new KrollDict[accountlist.size()]));
 		} else {
-			Log.d(LCAT,"no GET_ACCOUNTS permission");
+			Log.d(LCAT, "no GET_ACCOUNTS permission");
 			result.put("success", false);
 			result.put("error", true);
 			result.put("message", "Missing GET_ACCOUNTS permission");
@@ -192,9 +189,9 @@ public class PhonenumberModule extends KrollModule implements
 			Log.d(LCAT, "requestPermission " + permission);
 			String permissions[] = new String[] { "android.permission."
 					+ permission };
-			Activity currentActivity = TiApplication.getInstance()
-					.getCurrentActivity();
-			currentActivity.requestPermissions(permissions, requestCode);
+			Log.d(LCAT, "requestPermissions:" + permissions.toString());
+			TiApplication.getAppCurrentActivity()
+					.requestPermissions(permissions, requestCode);
 			return;
 		}
 	}
@@ -228,6 +225,7 @@ public class PhonenumberModule extends KrollModule implements
 	}
 
 	private void dispatchTaskAndCallback(int requestCode) {
+		Log.d(LCAT, "dispatchTaskAndCallback " + requestCode);
 		switch (requestCode) {
 		case REQCODE_READ_PHONE_STATE:
 			requests.get(requestCode)
@@ -242,3 +240,10 @@ public class PhonenumberModule extends KrollModule implements
 		}
 	}
 }
+
+
+
+
+
+
+
