@@ -4,8 +4,8 @@ This is a Axway Titanium module  for gettingtelephone numbrer og device. It offe
 
 ```javascript 
 const Tel = require('ti.phonenumber');
-
 const Window = Ti.UI.createWindow();
+
 
 ```
 
@@ -13,8 +13,12 @@ const Window = Ti.UI.createWindow();
 
 
 ```javascript
-const res = Tel.getNumberByAccount();
-console.log(res);
+if (Ti.Android.hasPermission('android.permission.READ_CONTACTS')) {
+	console.log(Tel.getByAccounts());
+} else Ti.Android.requestPermissions(['android.permission.READ_CONTACTS'],function(e)) {
+if (e.success) console.log(Tel.getByAccounts());
+
+
 
 ```
 
@@ -28,13 +32,10 @@ If you start without granted permissions the methode will return null;
 
 ```javascript
 
-const res = Tel.getNumberBySIM();
-console.log(res);
-Window.addEventListener('open',function() {
-	Tel.getNumberBySIM(function(e){
-		console.log(e);
-	});
-}
+if (Ti.Android.hasPermission('android.permission.READ_PHONE_STATE')) {
+	console.log(Tel.getBySim());
+} else Ti.Android.requestPermissions(['android.permission.READ_PHONE_STATE'],function(e)) {
+if (e.success) console.log(Tel.getBySim());
 ```
 In most cases this method will return null or '??????'. ;-)
 If you call with a call back function as Paramter, then the permission will requested.
@@ -44,19 +45,14 @@ If you call with a call back function as Paramter, then the permission will requ
 
 Needs `android.permission.READ_CONTACTS` permission.
 
-```javascript
-// you can work without permissions, in this case you
-// will get the result directly.
-const res = Tel.getNumberByContactlist();
-console.log(res);
 
-// or yot start with callback. Tn this case a permission
-// requester will start:
-Window.addEventListener('open',function() {
-	Tel.getNumberByContactList(function(e){
-		console.log(e);
-	});
-});
+```javascript
+if (Ti.Android.hasPermission('android.permission.READ_CONTACTS')) {
+	console.log(Tel.getByContacts());
+} else Ti.Android.requestPermissions(['android.permission.READ_CONTACTS'],function(e)) {
+if (e.success) console.log(Tel.getByContacts());
+
+
 Window.open();
 ```
 
