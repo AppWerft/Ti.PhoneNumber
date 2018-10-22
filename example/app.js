@@ -1,5 +1,5 @@
 const PERMISSIONS = ['android.permission.READ_PHONE_STATE', 'android.permission.READ_CONTACTS'];
-const TN = require("ti.phonenumber");
+const Tel = require("ti.phonenumber");
 
 var win = Ti.UI.createWindow({
 	backgroundColor : 'white'
